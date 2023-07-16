@@ -17,3 +17,5 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Process ${process.pid}, URL http://localhost:${port}, Server is being listened on ${port}`);
 });
+
+module.exports = app;
