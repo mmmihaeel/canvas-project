@@ -12,6 +12,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(pagesRoutes);
 
-app.listen(3000, () => {
-    console.log(`Process ${process.pid}, URL http://localhost:${3000}, Server is being listened on ${3000}`);
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+    console.log(`Process ${process.pid}, URL http://localhost:${port}, Server is being listened on ${port}`);
 });
