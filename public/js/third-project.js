@@ -16,7 +16,7 @@ window.addEventListener('load', () => {
             this.color = color;
             this.originX = x;
             this.originY = y;
-            this.size = this.effect.gap;
+            this.size = this.effect.gap / 3;
             this.dx = 0;
             this.dy = 0;
             this.vx = 0;
@@ -55,7 +55,7 @@ window.addEventListener('load', () => {
             this.canvasHeight = canvasHeight;
             this.textX = this.canvasWidth / 2;
             this.textY = this.canvasHeight / 2;
-            this.fontSize = 200;
+            this.fontSize = 300;
             this.lineHeight = this.fontSize * 1.1;
             this.maxTextWidth = this.canvasWidth * 0.8;
             this.textInput = document.getElementById('textInput');
@@ -68,7 +68,7 @@ window.addEventListener('load', () => {
             });
 
             this.particles = [];
-            this.gap = 3;
+            this.gap = 10;
             this.mouse = {
                 radius: 20000,
                 x: 0,
@@ -83,13 +83,13 @@ window.addEventListener('load', () => {
         wrapText(text) {
             const gradient = this.context.createLinearGradient(0, 0, this.canvasWidth, this.canvasHeight);
             gradient.addColorStop(0.3, 'red');
-            gradient.addColorStop(0.5, 'green');
+            gradient.addColorStop(0.5, 'magenta');
             gradient.addColorStop(0.7, 'yellow');
             this.context.fillStyle = gradient;
             this.context.textAlign = 'center';
             this.context.textBaseline = 'middle';
             this.context.lineWidth = 3;
-            this.context.strokeStyle = 'orange';
+            this.context.strokeStyle = gradient;
             this.context.font = this.fontSize + 'px Roboto Mono';
             let linesArray = [];
             let words = text.split(' ');
@@ -137,11 +137,34 @@ window.addEventListener('load', () => {
             }
         }
 
+        constellations() {
+            for (let a = 0; a < this.particles.length; a++) {
+                for (let b = a; b < this.particles.length; b++) {
+                    const dx = this.particles[a].x - this.particles[b].x;
+                    const dy = this.particles[a].y - this.particles[b].y;
+                    const distance = Math.hypot(dy, dx);
+                    const connectDistance = this.gap * 2.1;
+                    if (distance < connectDistance) {
+                        const opacity = 1 - (distance / connectDistance);
+                        const position = this.particles[a].size / 2;
+                        this.context.beginPath();
+                        this.context.moveTo(this.particles[a].x + position, this.particles[a].y + position);
+                        this.context.lineTo(this.particles[b].x + position, this.particles[b].y + position);
+                        this.context.save();
+                        this.context.globalAlpha = opacity;
+                        this.context.stroke();
+                        this.context.restore();
+                    }
+                }
+            }
+        }
+
         render() {
             this.particles.forEach(particle => {
                 particle.update();
                 particle.draw();
             });
+            this.constellations()
         }
 
         resize(width, height) {
