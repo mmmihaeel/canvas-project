@@ -4,12 +4,11 @@ window.addEventListener('load', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-
     class Particle {
         constructor(effect, x, y, color) {
             this.effect = effect;
             this.x = Math.random() * this.effect.canvasWidth;
-            this.y = 0;
+            this.y =  Math.random() * this.effect.canvasHeight;
             this.color = color;
             this.originX = x;
             this.originY = y;
@@ -71,8 +70,8 @@ window.addEventListener('load', () => {
         wrapText(text) {
             const gradient = this.context.createLinearGradient(0, 0, this.canvasWidth, this.canvasHeight);
             gradient.addColorStop(0.3, 'red');
-            gradient.addColorStop(0.5, 'fuchsia');
-            gradient.addColorStop(0.7, 'purple');
+            gradient.addColorStop(0.5, 'green');
+            gradient.addColorStop(0.7, 'white');
             this.context.fillStyle = gradient;
             this.context.letterSpacing = `${this.letterSpacing}px`;
             this.context.textAlign = 'center';
@@ -120,11 +119,6 @@ window.addEventListener('load', () => {
                     }
                 }
             }
-            console.log(this.particles)
-        }
-
-        constellations(){
-        
         }
 
         render(){
@@ -132,10 +126,6 @@ window.addEventListener('load', () => {
                 particle.update();
                 particle.draw();
             });  
-        }
-
-        resize(width, height){
-        
         }
     }
 
@@ -150,7 +140,6 @@ window.addEventListener('load', () => {
     }
 
     animate();
-
 });
 
 
