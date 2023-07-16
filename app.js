@@ -7,6 +7,10 @@ const app = express();
 
 const pagesRoutes = require('./routes/pages');
 
+app.get("/", (req, res) => {
+  res.send("Express on Vercel");
+});
+
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
