@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>liquid</title>
+    <title>Constellations_yellow</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
@@ -22,7 +22,6 @@
             position: absolute;
             top: 0;
             left: 0;
-            filter: blur(6px) contrast(30);
         }
 
         input {
@@ -37,7 +36,7 @@
 
 <body>
     <canvas id="canvas1"></canvas>
-    <input type="text" id="textInput" placeholder="Type something..." value="A">
+    <input type="text" id="textInput" placeholder="Type something..." value="Something...">
 
     <script>
         window.addEventListener('load', function () {
@@ -51,27 +50,27 @@
             class Particle {
                 constructor(effect, x, y, color) {
                     this.effect = effect;
-                    this.x = this.effect.canvasWidth * 0.5;
-                    this.y = this.effect.canvasHeight * 0.5;
+                    this.x = Math.random() * this.effect.canvasWidth;
+                    this.y = this.effect.canvasHeight;
                     this.color = color;
                     this.originX = x;
                     this.originY = y;
-                    this.size = this.effect.gap * 0.6;
-                    this.dx = 0;
+                    this.size = 3;
                     this.dy = 0;
                     this.vx = 0;
                     this.vy = 0;
                     this.force = 0;
                     this.angle = 0;
                     this.distance = 0;
-                    this.friction = 0.5;
-                    this.ease = Math.random() * 0.2 + 0.01;
-                    this.randomize = Math.random();
+                    this.friction = 0.9;
+                    this.ease = 0.2;
                 }
                 draw() {
-                    this.effect.context.beginPath();
-                    this.effect.context.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    this.effect.context.fill();
+                    this.effect.context.save();
+                    this.effect.context.fillStyle = this.color;
+                    this.effect.context.strokeStyle = this.color;
+                    this.effect.context.fillRect(this.x, this.y, this.size, this.size);
+                    this.effect.context.restore();
                 }
                 update() {
                     this.dx = this.effect.mouse.x - this.x;
@@ -83,6 +82,17 @@
                         this.angle = Math.atan2(this.dy, this.dx);
                         this.vx += this.force * Math.cos(this.angle);
                         this.vy += this.force * Math.sin(this.angle);
+                        if (this.distance < this.effect.mouse.radius * 0.5) {
+                            this.color = 'rgb(255,255,0)';
+                        } else if (this.distance < this.effect.mouse.radius * 0.7) {
+                            this.color = 'rgb(255,255,140)';
+                        } else if (this.distance < this.effect.mouse.radius) {
+                            this.color = 'rgb(255,255,210)';
+                        } else {
+                            this.color = 'rgb(255,255,255)';
+                        }
+                    } else {
+                        this.color = 'rgb(255,255,255)';
                     }
 
                     this.x += (this.vx *= this.friction) + (this.originX - this.x) * this.ease;
@@ -126,11 +136,9 @@
                     this.context.fillStyle = 'white';
                     this.context.textAlign = 'center';
                     this.context.textBaseline = 'middle';
-                    this.context.lineWidth = this.gap;
-                    this.context.lineCap = 'round';
+                    this.context.lineWidth = 1;
                     this.context.strokeStyle = 'white';
                     this.context.font = this.fontSize + 'px Bangers';
-                    this.context.letterSpacing = '20px';
                     // break multiline text
                     let linesArray = [];
                     let words = text.split(' ');
@@ -177,29 +185,28 @@
                         for (let b = a; b < this.particles.length; b++) {
                             const dx = this.particles[a].x - this.particles[b].x;
                             const dy = this.particles[a].y - this.particles[b].y;
-                            if (dx < this.canvasWidth * 0.1) {
-                                const distance = Math.hypot(dy, dx);
-                                const connectDistance = this.gap * 1.5;
-                                if (distance < connectDistance && this.randomize > 0.5) {
-                                    const opacity = 1 - (distance / connectDistance);
-                                    const position = this.particles[a].size / 2;
-                                    this.context.beginPath();
-                                    this.context.moveTo(this.particles[a].x + position, this.particles[a].y + position);
-                                    this.context.lineTo(this.particles[b].x + position, this.particles[b].y + position);
-                                    this.context.save();
-                                    this.context.globalAlpha = opacity;
-                                    this.context.stroke();
-                                    this.context.restore();
-                                }
+                            const distance = Math.hypot(dy, dx);
+                            const connectDistance = this.gap * 2.5;
+                            if (distance < connectDistance) {
+                                const opacity = 1 - (distance / connectDistance);
+                                const position = this.particles[a].size / 2;
+                                this.context.beginPath();
+                                this.context.moveTo(this.particles[a].x + position, this.particles[a].y + position);
+                                this.context.lineTo(this.particles[b].x + position, this.particles[b].y + position);
+                                this.context.save();
+                                this.context.globalAlpha = opacity;
+                                this.context.strokeStyle = this.particles[a].color;
+                                this.context.stroke();
+                                this.context.restore();
                             }
-
                         }
                     }
                 }
                 render() {
                     this.particles.forEach(particle => {
-                        particle.update();
                         particle.draw();
+                        particle.update();
+
                     });
                     this.constellations();
                 }
